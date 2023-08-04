@@ -8,6 +8,9 @@
 **Table of Contents**
 
 - [Installation](#installation)
+- [Usage](#usage)
+- [Prerequisites](#prerequisites)
+- [Citation](#citation)
 - [License](#license)
 
 ## Installation
