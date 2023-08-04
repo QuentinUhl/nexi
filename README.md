@@ -38,6 +38,10 @@ estimate_nexi(dwi_path, bvals_path, td_path, lowb_noisemap_path, out_path)
 
 ## Prerequisites
 
+### Data Acquisition
+
+For accurate NEXI parameter estimation using the nexi package, acquire PGSE EPI (Pulsed Gradient Spin Echo Echo-Planar Imaging) diffusion MRI data with diverse combinations of b values and diffusion times. Ensure reasonable signal-to-noise ratio (SNR) in the data for accurate parameter estimation.
+
 ### Preprocessing
 
 Before proceeding, make sure to preprocess your data with the following steps:
