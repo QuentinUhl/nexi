@@ -5,7 +5,7 @@ build-backend = "hatchling.build"
 [project]
 name = "nexi"
 dynamic = ["version"]
-description = ''
+description = 'Neurite Exchange Imaging (NEXI) model estimator for diffusion MRI'
 readme = "README.md"
 requires-python = ">=3.7"
 license = "Apache-2.0"
