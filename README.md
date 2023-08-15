@@ -1,6 +1,9 @@
 # Neurite Exchange Imaging (NEXI) model estimator for gray matter diffusion MRI
 
 [![PyPI - Version](https://img.shields.io/pypi/v/nexi.svg)](https://pypi.org/project/nexi)
+[![PyPI - Downloads](https://img.shields.io/pypi/dm/nexi)](#)
+[![GitHub](https://img.shields.io/github/license/QuentinUhl/nexi)](#)
+[![GitHub top language](https://img.shields.io/github/languages/top/QuentinUhl/nexi?color=lightgray)](#)
 [![PyPI - Python Version](https://img.shields.io/pypi/pyversions/nexi.svg)](https://pypi.org/project/nexi)
 
 -----
