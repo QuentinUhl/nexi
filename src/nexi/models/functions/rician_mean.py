@@ -1,5 +1,5 @@
 import numpy as np
-import scipy.special
+from scipy.special import hyp1f1
 
 
 def l12(x):
@@ -7,7 +7,7 @@ def l12(x):
     # Another way to define it would be:
     # np.float64(np.exp(x / 2) * ((1-x) * np.float64(scipy.special.iv(0, -x / 2)) - x * np.float64(scipy.special.iv(1, -x / 2))))
     # However, the following version is more stable.
-    return scipy.special.hyp1f1(-0.5, 1, x)
+    return hyp1f1(-0.5, 1, x)
 
 
 def l12_derivate(x):
@@ -17,12 +17,15 @@ def l12_derivate(x):
     # a = -0.5
     # b = 1
     # (a-b)/b = -1.5
-    return -0.5*scipy.special.hyp1f1(0.5, 2, x)
+    return -0.5*hyp1f1(0.5, 2, x)
 
 
 def rice_mean(nu, sigma):
     """
     Mean/Expectation of the Rice distribution
+
+    :param nu: array_like, shape (n_samples, ), mean of the Gaussian distribution
+    :param sigma: scalar or array_like with shape (n_samples, ), standard deviation of the Gaussian distribution
     """
     # Scalar case
     if np.isscalar(sigma):
@@ -40,6 +43,10 @@ def rice_mean_and_jacobian(nu, sigma, dnu):
     """
     Mean/Expectation of the Rice distribution and its Jacobian. They are computed together to avoid
     recomputing the confluent hypergeometric function of the first kind, or Kummer's function.
+
+    :param nu: array_like, shape (n_samples, ), mean of the Gaussian distribution
+    :param sigma: scalar or array_like with shape (n_samples, ), standard deviation of the Gaussian distribution
+    :param dnu: array_like, shape (n_samples, n_parameters), Jacobian of the mean of the Gaussian distribution
     """
     # Scalar case
     if np.isscalar(sigma):
@@ -48,8 +55,8 @@ def rice_mean_and_jacobian(nu, sigma, dnu):
             return nu, dnu_extended
         else:
             x = - nu**2 / (2*sigma**2)
-            K = scipy.special.hyp1f1(-0.5, 1, x)
-            dK = -0.5*scipy.special.hyp1f1(0.5, 2, x)
+            K = hyp1f1(-0.5, 1, x)
+            dK = -0.5*hyp1f1(0.5, 2, x)
             mu = np.sqrt(np.pi / 2) * sigma * K
             dmu_dnu = np.tile((np.sqrt(np.pi / 2) * sigma * dK * (- nu / sigma**2))[:, np.newaxis], dnu.shape[-1]) * dnu
             dmu_dnu = np.hstack((dmu_dnu, np.zeros((dmu_dnu.shape[0], 1))))
@@ -61,8 +68,8 @@ def rice_mean_and_jacobian(nu, sigma, dnu):
     else:
         nan_sigma = np.where(sigma == 0, np.nan, sigma)
         x = - nu ** 2 / (2 * nan_sigma ** 2)
-        K = scipy.special.hyp1f1(-0.5, 1, x)
-        dK = -0.5 * scipy.special.hyp1f1(0.5, 2, x)
+        K = hyp1f1(-0.5, 1, x)
+        dK = -0.5 * hyp1f1(0.5, 2, x)
         mu = np.sqrt(np.pi / 2) * nan_sigma * K
         dmu_dnu = np.tile((np.sqrt(np.pi / 2) * nan_sigma * dK * (- nu / nan_sigma ** 2))[:, np.newaxis], dnu.shape[-1]) * dnu
         dmu_dnu = np.where(np.tile(sigma[:, np.newaxis], dnu.shape[-1]) == 0, dnu, dmu_dnu)
