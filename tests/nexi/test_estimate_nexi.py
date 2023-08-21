@@ -38,7 +38,7 @@ def test_estimate_nexi():
     os.remove(powder_average_npz_filename)
     os.remove(sigma_filename)
 
-    parameters = ["t_ex", "Di", "De", "f", "sigma"]
+    parameters = ["t_ex", "di", "de", "f", "sigma"]
     for param in parameters:
         param_filename = f'tests/nexi/data/nexi_rice_mean/nexi_rice_mean_{param}.nii.gz'
         param_ref_filename = f'tests/nexi/data/models_ref/nexi_rice_mean_{param}_ref.nii.gz'

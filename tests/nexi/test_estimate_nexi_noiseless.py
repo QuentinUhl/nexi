@@ -28,7 +28,7 @@ def test_estimate_nexi_noiseless():
     os.remove(td_filename)
     os.remove(powder_average_npz_filename)
 
-    parameters = ["t_ex", "Di", "De", "f"]
+    parameters = ["t_ex", "di", "de", "f"]
     for param in parameters:
         param_filename = f'tests/nexi/data/nexi/nexi_{param}.nii.gz'
         param_ref_filename = f'tests/nexi/data/models_ref/nexi_{param}_ref.nii.gz'
