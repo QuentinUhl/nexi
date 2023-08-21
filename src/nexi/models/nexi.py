@@ -1,5 +1,5 @@
-from src.nexi.models.microstructure_models import MicroStructModel
-from src.nexi.models.functions.nexi_functions import nexi_signal_from_vector, nexi_jacobian_from_vector, \
+from .microstructure_models import MicroStructModel
+from .functions.nexi_functions import nexi_signal_from_vector, nexi_jacobian_from_vector, \
     nexi_hessian_from_vector, nexi_optimized_mse_jacobian
 import numpy as np
 

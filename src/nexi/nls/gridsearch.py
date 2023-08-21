@@ -2,7 +2,7 @@ import numpy as np
 from tqdm import tqdm
 import itertools
 from joblib import Parallel, delayed
-from src.nexi.models.functions.rician_mean import rice_mean
+from ..models.functions.rician_mean import rice_mean
 
 
 def find_nls_initialization(signal, sigma, nb_estimates, acq_param, microstruct_model, grid_search_param_lim,

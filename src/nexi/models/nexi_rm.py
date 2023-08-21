@@ -1,8 +1,8 @@
 import numpy as np
-from src.nexi.models.microstructure_models import MicroStructModel
-from src.nexi.models.nexi import Nexi
-from src.nexi.models.functions.nexi_functions import nexi_signal_from_vector, nexi_jacobian_concatenated_from_vector
-from src.nexi.models.functions.rician_mean import rice_mean, rice_mean_and_jacobian, broad5
+from .microstructure_models import MicroStructModel
+from .nexi import Nexi
+from .functions.nexi_functions import nexi_signal_from_vector, nexi_jacobian_concatenated_from_vector
+from .functions.rician_mean import rice_mean, rice_mean_and_jacobian, broad5
 
 
 class NexiRiceMean(MicroStructModel):
