@@ -1,12 +1,12 @@
 import os
 import argparse
 import numpy as np
-from .powderaverage.powderaverage import powder_average, save_data_as_npz
-from .models.nexi import Nexi
-from .models.parameters.acq_parameters import AcquisitionParameters
-from .models.parameters.save_parameters import save_estimations_as_nifti
-from .nls.nls import nls_parallel
-from .nls.gridsearch import find_nls_initialization
+from src.nexi.powderaverage.powderaverage import powder_average, save_data_as_npz
+from src.nexi.models.nexi import Nexi
+from src.nexi.models.parameters.acq_parameters import AcquisitionParameters
+from src.nexi.models.parameters.save_parameters import save_estimations_as_nifti
+from src.nexi.nls.nls import nls_parallel
+from src.nexi.nls.gridsearch import find_nls_initialization
 
 
 def estimate_nexi_noiseless(dwi_path, bvals_path, td_path, out_path,
