@@ -32,12 +32,11 @@ classifiers = [
   "Programming Language :: Python :: Implementation :: CPython",
   "Programming Language :: Python :: Implementation :: PyPy",
 ]
-dependencies = []
 
 [project.urls]
-Documentation = "https://github.com/unknown/nexi#readme"
-Issues = "https://github.com/unknown/nexi/issues"
-Source = "https://github.com/unknown/nexi"
+Documentation = "https://github.com/QuentinUhl/nexi#readme"
+Issues = "https://github.com/QuentinUhl/nexi/issues"
+Source = "https://github.com/QuentinUhl/nexi"
 
 [tool.hatch.version]
 path = "src/nexi/__about__.py"
