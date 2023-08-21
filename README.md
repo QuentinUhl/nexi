@@ -5,6 +5,7 @@
 [![GitHub](https://img.shields.io/github/license/QuentinUhl/nexi)](#)
 [![GitHub top language](https://img.shields.io/github/languages/top/QuentinUhl/nexi?color=lightgray)](#)
 [![PyPI - Python Version](https://img.shields.io/pypi/pyversions/nexi.svg)](https://pypi.org/project/nexi)
+[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 
 -----
 
