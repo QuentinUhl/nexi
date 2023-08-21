@@ -17,7 +17,7 @@ class AcquisitionParameters(ABC):
         else:
             self.small_delta = None
         # resulting number of acquisitions
-        self.nb_acq = np.product(self.b.shape)
+        self.nb_acq = np.prod(self.b.shape)
         # resulting number of dimension of acquisition shape
         self.ndim = self.b.ndim
         # resulting shape of acquisition
