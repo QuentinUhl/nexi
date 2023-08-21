@@ -1,3 +1,4 @@
+import logging
 import numpy as np
 from tqdm import tqdm
 import itertools
@@ -32,7 +33,7 @@ def find_nls_initialization(signal, sigma, nb_estimates, acq_param, microstruct_
     else:
         n_moving_param = microstruct_model.n_params
 
-    print(f"Initializing first grid search inside :\n{grid_search_param_lim}\nusing model {microstruct_model.name}\n...")
+    logging.info(f"Initializing first grid search inside :\n{grid_search_param_lim}\nusing model {microstruct_model.name}\n...")
 
     # Generate the parameter grid combinations
     param_grid = [np.linspace(grid_search_param_lim[p][0], grid_search_param_lim[p][1], nb_points[p] + 2)[1:-1].tolist() for p in range(n_moving_param)]
@@ -42,17 +43,17 @@ def find_nls_initialization(signal, sigma, nb_estimates, acq_param, microstruct_
     # Generate the non-corrected signal dictionary (or grid)
     if microstruct_model.has_rician_mean_correction:
         non_corrected_model = microstruct_model.non_corrected_model
-        print(f"Generating {non_corrected_model.name} signal dictionary")
+        logging.info(f"Generating {non_corrected_model.name} signal dictionary")
         signal_dict = np.array(Parallel(n_jobs=n_cores)(delayed(non_corrected_model.get_signal)(params, acq_param) for params
                                                         in tqdm(grid_combinations)))
     else:
         signal_dict = np.array(Parallel(n_jobs=n_cores)(delayed(microstruct_model.get_signal)(params, acq_param) for params
                                                         in tqdm(grid_combinations)))
     if debug:
-        print("Signal dictionary shape : ", signal_dict.shape)
+        logging.info(f"Signal dictionary shape : {signal_dict.shape}")
 
     # Find the initial ground truth whether the model has a Rician mean correction or not
-    print("Extracting initial Ground Truth from dictionary")
+    logging.info("Extracting initial Ground Truth from dictionary")
     if microstruct_model.has_rician_mean_correction:
         initial_gt = np.array(Parallel(n_jobs=n_cores)(
             delayed(least_square_argmin_rician_corrected)(signal[i], sigma[i], signal_dict, parameters, acq_param.ndim)
@@ -61,7 +62,7 @@ def find_nls_initialization(signal, sigma, nb_estimates, acq_param, microstruct_
     else:
         initial_gt = np.array(Parallel(n_jobs=n_cores)(delayed(least_square_argmin)(signal[i], signal_dict, parameters, acq_param.ndim) for i in tqdm(range(nb_estimates))))
     if debug:
-        print('initial_gt shape : ', initial_gt.shape)
+        logging.info(f'initial_gt shape : {initial_gt.shape}')
 
     # Add randomness to the initial GT
     for parameter in range(len(grid_search_param_lim)-1):
@@ -70,8 +71,8 @@ def find_nls_initialization(signal, sigma, nb_estimates, acq_param, microstruct_
     # Print the first initial ground truth to check
     if debug:
         for p_ind, param_name in enumerate(microstruct_model.param_names):
-            print(f'First initial_gt {param_name} : ', initial_gt[0, p_ind])
-    print("First Grid Search completed\n")
+            logging.info(f'First initial_gt {param_name} : {initial_gt[0, p_ind]}')
+    logging.info("First Grid Search completed\n")
     return initial_gt
 
 

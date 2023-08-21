@@ -1,3 +1,4 @@
+import logging
 import numpy as np
 import nibabel as nib
 
@@ -18,4 +19,4 @@ def save_estimations_as_nifti(estimations, model, powder_average_path, mask_path
         param_map[mask] = estimations[:, i]
         param_map_nifti = nib.Nifti1Image(param_map, aff, hdr)
         nib.save(param_map_nifti, f'{out_path}/{model.name.lower()}_{param_name.lower()}.nii.gz')
-        print(f'{model.name.lower()}_{param_name.lower()}.nii.gz saved in {out_path}')
+        logging.info(f'{model.name.lower()}_{param_name.lower()}.nii.gz saved in {out_path}')

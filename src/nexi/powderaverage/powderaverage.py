@@ -1,3 +1,4 @@
+import logging
 import warnings
 import numpy as np
 import nibabel as nib
@@ -100,13 +101,13 @@ def powder_average(dwi_path, bvals_path, td_path, mask_path, out_path, debug=Fal
         # Warn that the b-values were probably not in ms/µm²:
         warnings.warn("b-values provided are suspiciously high. Please check that these values were in ms/µm². "
                       "Continuing as if b-values provided were in s/mm²")
-        print("Continuing as if b-values provided were in s/mm²")
+        logging.info("Continuing as if b-values provided were in s/mm²")
         pa_b = np.divide(pa_b, 1000)
 
     # Save the powder averaged image with all b-values including b0s
     if debug:
-        print("Sanity check")
-        print("Image with b0s shape : ", pa_image.shape)
+        logging.info("Sanity check")
+        logging.info(f"Image with b0s shape : {pa_image.shape}")
         powder_average_including_b0_nii = nib.Nifti1Image(pa_image, affine=aff, header=hdr)
         powder_average_including_b0_filename = f'{out_path}/powderaverage_incl_b0_dwi.nii.gz'
         nib.save(powder_average_including_b0_nii, powder_average_including_b0_filename)
@@ -119,15 +120,15 @@ def powder_average(dwi_path, bvals_path, td_path, mask_path, out_path, debug=Fal
     powder_average_nii = nib.Nifti1Image(pa_img_no_b0, affine=aff, header=hdr)
     nib.save(powder_average_nii, powder_average_filename)
     if debug:
-        print("Without b0s, image shape : ", pa_img_no_b0.shape, "  with maximum value of ", np.nanmax(pa_img_no_b0))
-        print("b-values :", pa_b_no_b0)
-        print("td values :", pa_td_no_b0)
+        logging.info(f"Without b0s, image shape : {pa_img_no_b0.shape}  with maximum value of {np.nanmax(pa_img_no_b0)}")
+        logging.info(f"b-values :{pa_b_no_b0}")
+        logging.info(f"td values :{pa_td_no_b0}")
 
     # Save b-values and diffusion times
     np.savetxt(updated_bvals_path, pa_b_no_b0, fmt='%1.3f')
     np.savetxt(updated_td_path, pa_td_no_b0, fmt='%1.3f')
 
-    print("Powder average finished !")
+    logging.info("Powder average finished !")
 
     return powder_average_filename, updated_bvals_path, updated_td_path
 
@@ -165,10 +166,10 @@ def save_powder_average_as_npz(dwi_path, bvals_path, td_path, small_delta, out_p
     tdval = np.loadtxt(td_path)
 
     if debug:
-        print("Sanity Check")
-        print("b-values : ", bval)
-        print("diffusion times : ", tdval)
-        print("small delta : ", small_delta)
+        logging.info("Sanity Check")
+        logging.info(f"b-values : {bval}")
+        logging.info(f"diffusion times : {tdval}")
+        logging.info(f"small delta : {small_delta}")
 
     # Initialize the extraction of the signal values where there is no NaN
     mask = (pa_image.sum(axis=-1) > 0)
@@ -177,8 +178,8 @@ def save_powder_average_as_npz(dwi_path, bvals_path, td_path, small_delta, out_p
     signal = pa_image[mask, :]
 
     if debug:
-        print("Is there any nan ? ", np.isnan(signal).sum())
-        print("Meaningful signal shape : ", signal.shape)
+        logging.info(f"Is there any nan ? {np.isnan(signal).sum()}")
+        logging.info(f"Meaningful signal shape : {signal.shape}")
 
     np.savez_compressed(powder_average_signal_npz_filename, signal=signal,
                         b=bval, td=tdval, small_delta=small_delta,
@@ -264,9 +265,9 @@ def save_data_as_npz(powder_average_filename, bvals_path, td_path, out_path,
     tdval = np.loadtxt(td_path)
 
     if debug:
-        print("Sanity Check")
-        print("b-values : ", bval)
-        print("diffusion times : ", tdval)
+        logging.info("Sanity Check")
+        logging.info(f"b-values : {bval}")
+        logging.info(f"diffusion times : {tdval}")
 
     # Initialize the extraction of the signal values where there is no NaN
     mask = (pa_image.sum(axis=-1) > 0)
@@ -275,15 +276,15 @@ def save_data_as_npz(powder_average_filename, bvals_path, td_path, out_path,
     signal = pa_image[mask, :]
 
     if debug:
-        print("Is there any NaN in the signal ? ", np.isnan(np.sum(signal)))
-        print("Meaningful signal shape : ", signal.shape)
-        print("Mask shape : ", mask.shape)
+        logging.info(f"Is there any NaN in the signal ? {np.isnan(np.sum(signal))}")
+        logging.info(f"Meaningful signal shape : {signal.shape}")
+        logging.info(f"Mask shape : {mask.shape}")
 
     if normalized_sigma_filename is not None:
         norm_sigma = nib.load(normalized_sigma_filename).get_fdata()
         norm_sigma = np.clip(norm_sigma, 1e-9, 100)
         if debug:
-            print("Normalized sigma array shape : ", norm_sigma.shape)
+            logging.info(f"Normalized sigma array shape : {norm_sigma.shape}")
         sigma = norm_sigma[mask]
         np.savez_compressed(powder_average_signal_npz_filename, signal=signal, sigma=sigma,
                             b=bval, td=tdval, small_delta=small_delta,

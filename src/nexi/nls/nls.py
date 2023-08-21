@@ -1,4 +1,5 @@
 # Implementation of Non-linear Least Squares
+import logging
 import numpy as np
 import scipy.optimize as op
 from tqdm import tqdm
@@ -66,11 +67,11 @@ def nls_parallel(signal, N, microstruct_model, acq_param, nls_param_lim, max_nls
     x_sol = np.empty([N, microstruct_model.n_params])
     if initial_gt is None:
         initial_gt = [None for _ in range(N)]
-    print('Running Parallelized Non-linear Least Squares')
+    logging.info('Running Parallelized Non-linear Least Squares')
     if hasattr(microstruct_model, 'get_mse_jacobian'):
-        print("Optimization using implemented jacobian.")
+        logging.info("Optimization using implemented jacobian.")
     else:
-        print("Warning : Jacobian not implemented for this model. Optimization will be slower.")
+        logging.info("Warning : Jacobian not implemented for this model. Optimization will be slower.")
     x_parallel = Parallel(n_jobs=n_cores)(
         delayed(nls_loop_verified)(signal[irunning], microstruct_model, acq_param, nls_param_lim,
                                    initial_gt[irunning], max_nls_verif) for irunning in tqdm(range(N)))  # n_jobs=-1, verbose=50 for verbose
@@ -80,8 +81,8 @@ def nls_parallel(signal, N, microstruct_model, acq_param, nls_param_lim, max_nls
         x_sol[index] = x_parallel[index][0]
         x_0[index] = x_parallel[index][1]
         verif_failed_count += x_parallel[index][2]
-    print(f"Failed {max_nls_verif}-times border verification procedure : {verif_failed_count} out of {N}")
-    print('Non-linear Least Squares completed')
+    logging.info(f"Failed {max_nls_verif}-times border verification procedure : {verif_failed_count} out of {N}")
+    logging.info('Non-linear Least Squares completed')
     return x_sol, x_0
 
 ####################################################################
@@ -126,7 +127,7 @@ def nls_loop_verified(target_signal, microstruct_model, acq_param,
         iter_nb += 1
     if touch_border(x_sol, nls_param_lim, microstruct_model.n_params) and iter_nb == max_nls_verif:
         verif_failed = 1
-        # print("Border touched " + str(int(max_nls_verif)) + " times !")
+        # logging.info("Border touched " + str(int(max_nls_verif)) + " times !")
     else:
         verif_failed = 0
     return [x_sol, x_0, verif_failed]

@@ -1,4 +1,5 @@
 import os
+import logging
 import argparse
 import numpy as np
 from .powderaverage.powderaverage import powder_average, normalize_sigma, save_data_as_npz
@@ -36,6 +37,9 @@ def estimate_nexi(dwi_path, bvals_path, td_path, lowb_noisemap_path, out_path,
     -------
     None.
     """
+    # Configure logging
+    logging.basicConfig(level=logging.INFO, format='%(message)s')  # Set the logging level to INFO or desired level
+
     # Create the output directory if it does not exist
     if not os.path.exists(out_path):
         os.makedirs(out_path)
