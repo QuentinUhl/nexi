@@ -50,7 +50,7 @@ dependencies = [
   "joblib",
   "scipy",
   "coverage[toml]>=6.5",
-  "pytest",
+  "pytest"
 ]
 [tool.hatch.envs.default.scripts]
 test = "pytest {args:tests}"
