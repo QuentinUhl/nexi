@@ -17,7 +17,7 @@ def l12_derivate(x):
     # a = -0.5
     # b = 1
     # (a-b)/b = -1.5
-    return -0.5*hyp1f1(0.5, 2, x)
+    return -0.5 * hyp1f1(0.5, 2, x)
 
 
 def rice_mean(nu, sigma):
@@ -54,11 +54,13 @@ def rice_mean_and_jacobian(nu, sigma, dnu):
             dnu_extended = np.hstack((dnu, np.zeros((dnu.shape[0], 1))))
             return nu, dnu_extended
         else:
-            x = - nu**2 / (2*sigma**2)
+            x = -(nu ** 2) / (2 * sigma ** 2)
             K = hyp1f1(-0.5, 1, x)
-            dK = -0.5*hyp1f1(0.5, 2, x)
+            dK = -0.5 * hyp1f1(0.5, 2, x)
             mu = np.sqrt(np.pi / 2) * sigma * K
-            dmu_dnu = np.tile((np.sqrt(np.pi / 2) * sigma * dK * (- nu / sigma**2))[:, np.newaxis], dnu.shape[-1]) * dnu
+            dmu_dnu = (
+                np.tile((np.sqrt(np.pi / 2) * sigma * dK * (-nu / sigma ** 2))[:, np.newaxis], dnu.shape[-1]) * dnu
+            )
             dmu_dnu = np.hstack((dmu_dnu, np.zeros((dmu_dnu.shape[0], 1))))
             # Uncomment to allow change in sigma (and comment the previous line)
             # dmu_dsigma = np.sqrt(np.pi / 2) * (l12(x) + (nu / sigma)**2 * dK)
@@ -67,11 +69,13 @@ def rice_mean_and_jacobian(nu, sigma, dnu):
     # Array case
     else:
         nan_sigma = np.where(sigma == 0, np.nan, sigma)
-        x = - nu ** 2 / (2 * nan_sigma ** 2)
+        x = -(nu ** 2) / (2 * nan_sigma ** 2)
         K = hyp1f1(-0.5, 1, x)
         dK = -0.5 * hyp1f1(0.5, 2, x)
         mu = np.sqrt(np.pi / 2) * nan_sigma * K
-        dmu_dnu = np.tile((np.sqrt(np.pi / 2) * nan_sigma * dK * (- nu / nan_sigma ** 2))[:, np.newaxis], dnu.shape[-1]) * dnu
+        dmu_dnu = (
+            np.tile((np.sqrt(np.pi / 2) * nan_sigma * dK * (-nu / nan_sigma ** 2))[:, np.newaxis], dnu.shape[-1]) * dnu
+        )
         dmu_dnu = np.where(np.tile(sigma[:, np.newaxis], dnu.shape[-1]) == 0, dnu, dmu_dnu)
         dmu_dnu = np.hstack((dmu_dnu, np.zeros((dmu_dnu.shape[0], 1))))
         # Uncomment to allow change in sigma (and comment the previous line)

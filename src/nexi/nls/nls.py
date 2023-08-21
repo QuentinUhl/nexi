@@ -73,8 +73,11 @@ def nls_parallel(signal, N, microstruct_model, acq_param, nls_param_lim, max_nls
     else:
         logging.info("Warning : Jacobian not implemented for this model. Optimization will be slower.")
     x_parallel = Parallel(n_jobs=n_cores)(
-        delayed(nls_loop_verified)(signal[irunning], microstruct_model, acq_param, nls_param_lim,
-                                   initial_gt[irunning], max_nls_verif) for irunning in tqdm(range(N)))  # n_jobs=-1, verbose=50 for verbose
+        delayed(nls_loop_verified)(
+            signal[irunning], microstruct_model, acq_param, nls_param_lim, initial_gt[irunning], max_nls_verif
+        )
+        for irunning in tqdm(range(N))
+    )  # n_jobs=-1, verbose=50 for verbose
     # NLS_loop_verified is NLS_loop run several times until NLS doesn't output any boundary. Defined below.
     verif_failed_count = 0
     for index in range(N):
@@ -84,6 +87,7 @@ def nls_parallel(signal, N, microstruct_model, acq_param, nls_param_lim, max_nls
     logging.info(f"Failed {max_nls_verif}-times border verification procedure : {verif_failed_count} out of {N}")
     logging.info('Non-linear Least Squares completed')
     return x_sol, x_0
+
 
 ####################################################################
 # Verification of each NLS loop max_nls_verif times
@@ -104,8 +108,7 @@ def touch_border(x_sol, nls_param_lim, n_param):
     return False
 
 
-def nls_loop_verified(target_signal, microstruct_model, acq_param,
-                      nls_param_lim, initial_gt=None, max_nls_verif=5):
+def nls_loop_verified(target_signal, microstruct_model, acq_param, nls_param_lim, initial_gt=None, max_nls_verif=5):
     """
     Verification of each NLS loop max_nls_verif times.
     :param target_signal: signal for all b-values (shells) and diffusion times (Deltas)

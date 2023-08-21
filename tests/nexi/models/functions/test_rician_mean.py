@@ -38,10 +38,9 @@ def test_rice_mean_and_jacobian():
 
     result_mu, result_dmu_dnu = rice_mean_and_jacobian(nu, sigma, dnu)
     expected_mu = np.array([0.82543871, np.nan, 0.46457174, np.nan])
-    expected_dmu_dnu = np.array([[0.96693878, 1.93387755, 0.0],
-                                 [1.0, 2.0, 0.0],
-                                 [0.55717947, 1.11435894, 0.0],
-                                 [1.0, 2.0, 0.0]])
+    expected_dmu_dnu = np.array(
+        [[0.96693878, 1.93387755, 0.0], [1.0, 2.0, 0.0], [0.55717947, 1.11435894, 0.0], [1.0, 2.0, 0.0]]
+    )
 
     assert np.allclose(result_mu, expected_mu, equal_nan=True)
     assert np.allclose(result_dmu_dnu, expected_dmu_dnu)
@@ -51,10 +50,9 @@ def test_rice_mean_and_jacobian():
     sigma = 0.2
     result_mu, result_dmu_dnu = rice_mean_and_jacobian(nu, sigma, dnu)
     expected_mu = np.array([0.82543871, 0.54224029, 0.37498715, 0.25066283])
-    expected_dmu_dnu = np.array([[0.96693878, 1.93387755, 0.0],
-                                 [0.90478279, 1.80956557, 0.0],
-                                 [0.73546946, 1.47093891, 0.0],
-                                 [0.0, 0.0, 0.0]])
+    expected_dmu_dnu = np.array(
+        [[0.96693878, 1.93387755, 0.0], [0.90478279, 1.80956557, 0.0], [0.73546946, 1.47093891, 0.0], [0.0, 0.0, 0.0]]
+    )
 
     assert np.allclose(result_mu, expected_mu)
     assert np.allclose(result_dmu_dnu, expected_dmu_dnu)
@@ -64,10 +62,7 @@ def test_rice_mean_and_jacobian():
     sigma = 0
     result_mu, result_dmu_dnu = rice_mean_and_jacobian(nu, sigma, dnu)
     expected_mu = np.array([0.8, 0.5, 0.3, 0])
-    expected_dmu_dnu = np.array([[1, 2, 0.0],
-                                 [1, 2, 0.0],
-                                 [1, 2, 0.0],
-                                 [1, 2, 0.0]])
+    expected_dmu_dnu = np.array([[1, 2, 0.0], [1, 2, 0.0], [1, 2, 0.0], [1, 2, 0.0]])
 
     assert np.allclose(result_mu, expected_mu)
     assert np.allclose(result_dmu_dnu, expected_dmu_dnu)

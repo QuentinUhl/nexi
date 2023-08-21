@@ -1,6 +1,10 @@
 from .microstructure_models import MicroStructModel
-from .functions.nexi_functions import nexi_signal_from_vector, nexi_jacobian_from_vector, \
-    nexi_hessian_from_vector, nexi_optimized_mse_jacobian
+from .functions.nexi_functions import (
+    nexi_signal_from_vector,
+    nexi_jacobian_from_vector,
+    nexi_hessian_from_vector,
+    nexi_optimized_mse_jacobian,
+)
 import numpy as np
 
 
@@ -56,4 +60,6 @@ class Nexi(MicroStructModel):
     @classmethod
     def get_mse_jacobian(cls, parameters, acq_parameters, signal_gt):
         """Get signal from single Ground Truth."""
-        return nexi_optimized_mse_jacobian(parameters, acq_parameters.b, acq_parameters.td, signal_gt, acq_parameters.ndim)
+        return nexi_optimized_mse_jacobian(
+            parameters, acq_parameters.b, acq_parameters.td, signal_gt, acq_parameters.ndim
+        )

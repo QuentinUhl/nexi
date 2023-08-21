@@ -10,8 +10,7 @@ from .nls.nls import nls_parallel
 from .nls.gridsearch import find_nls_initialization
 
 
-def estimate_nexi(dwi_path, bvals_path, td_path, lowb_noisemap_path, out_path,
-                  mask_path=None, debug=False):
+def estimate_nexi(dwi_path, bvals_path, td_path, lowb_noisemap_path, out_path, mask_path=None, debug=False):
     """
     Estimate the NEXI model parameters for a given set of preprocessed signals,
     providing the b-values, diffusion times and low b-values noise map. A mask is optional but highly recommended.
@@ -45,15 +44,19 @@ def estimate_nexi(dwi_path, bvals_path, td_path, lowb_noisemap_path, out_path,
         os.makedirs(out_path)
 
     # Convert into powder average
-    powder_average_path, updated_bvals_path, updated_td_path = powder_average(dwi_path, bvals_path, td_path,
-                                                                              mask_path, out_path, debug=debug)
+    powder_average_path, updated_bvals_path, updated_td_path = powder_average(
+        dwi_path, bvals_path, td_path, mask_path, out_path, debug=debug
+    )
     # NEXI with Rician Mean correction
     normalized_sigma_filename = normalize_sigma(dwi_path, lowb_noisemap_path, bvals_path, out_path)
-    powder_average_signal_npz_filename = save_data_as_npz(powder_average_path,
-                                                          updated_bvals_path, updated_td_path,
-                                                          out_path,
-                                                          normalized_sigma_filename=normalized_sigma_filename,
-                                                          debug=debug)
+    powder_average_signal_npz_filename = save_data_as_npz(
+        powder_average_path,
+        updated_bvals_path,
+        updated_td_path,
+        out_path,
+        normalized_sigma_filename=normalized_sigma_filename,
+        debug=debug,
+    )
 
     # Load the powder average signal, normalized sigma, b-values and diffusion time (acquisition parameters)
     powder_average_signal_npz = np.load(powder_average_signal_npz_filename)
@@ -75,20 +78,28 @@ def estimate_nexi(dwi_path, bvals_path, td_path, lowb_noisemap_path, out_path,
     initial_grid_search = True
     initial_gt = None
     if initial_grid_search:
-        initial_gt = find_nls_initialization(signal, sigma, voxel_nb,
-                                             acq_param, microstruct_model, nls_param_lim, debug=debug)
+        initial_gt = find_nls_initialization(
+            signal, sigma, voxel_nb, acq_param, microstruct_model, nls_param_lim, debug=debug
+        )
 
     # Compute the NLS estimations
-    estimations, estimation_init = nls_parallel(signal, voxel_nb,
-                                                microstruct_model, acq_param,
-                                                nls_param_lim=nls_param_lim,
-                                                max_nls_verif=max_nls_verif,
-                                                initial_gt=initial_gt)
+    estimations, estimation_init = nls_parallel(
+        signal,
+        voxel_nb,
+        microstruct_model,
+        acq_param,
+        nls_param_lim=nls_param_lim,
+        max_nls_verif=max_nls_verif,
+        initial_gt=initial_gt,
+    )
 
     # Save the NEXI model parameters
     if debug:
-        np.savez_compressed(f'{out_path}/{microstruct_model.name.lower()}_estimations.npz',
-                            estimations=estimations, estimation_init=estimation_init)
+        np.savez_compressed(
+            f'{out_path}/{microstruct_model.name.lower()}_estimations.npz',
+            estimations=estimations,
+            estimation_init=estimation_init,
+        )
 
     # Save the NEXI model parameters as nifti
     save_estimations_as_nifti(estimations, microstruct_model, powder_average_path, mask_path, out_path)
@@ -96,8 +107,10 @@ def estimate_nexi(dwi_path, bvals_path, td_path, lowb_noisemap_path, out_path,
 
 if __name__ == '__main__':
     # Parse arguments
-    parser = argparse.ArgumentParser(description='Estimate the NEXI model parameters for a given set of preprocessed '
-                                                 'signals, providing the b-values and diffusion time.')
+    parser = argparse.ArgumentParser(
+        description='Estimate the NEXI model parameters for a given set of preprocessed '
+        'signals, providing the b-values and diffusion time.'
+    )
     parser.add_argument('dwi_path', help='path to the preprocessed signals')
     # For conversion from b-values in s/µm² to b-values in ms/µm², divide by 1000
     parser.add_argument('bvals_path', help='path to the b-values (in ms/µm²) txt file')
@@ -112,5 +125,13 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     # estimate_nexi(**vars(parser.parse_args()))
-    estimate_nexi(args.dwi_path, args.bvals_path, args.td_path, args.lowb_noisemap_path,
-                  args.out_path, args.small_delta, args.mask_path, args.debug)
+    estimate_nexi(
+        args.dwi_path,
+        args.bvals_path,
+        args.td_path,
+        args.lowb_noisemap_path,
+        args.out_path,
+        args.small_delta,
+        args.mask_path,
+        args.debug,
+    )

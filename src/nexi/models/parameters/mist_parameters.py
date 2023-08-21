@@ -26,9 +26,11 @@ class MIcroSTructureParameters(ABC):
         # parameters
         param = np.empty([n_set, self.n_params])
         for param_index in range(microstruct_model.n_params):
-            param[:, param_index] = np.random.rand(n_set) * \
-                                    (microstruct_model.param_lim[param_index][1] - microstruct_model.param_lim[param_index][0]) \
-                                    + microstruct_model.param_lim[param_index][0]
+            param[:, param_index] = (
+                np.random.rand(n_set)
+                * (microstruct_model.param_lim[param_index][1] - microstruct_model.param_lim[param_index][0])
+                + microstruct_model.param_lim[param_index][0]
+            )
         if microstruct_model.constraints is not None:
             for constr in microstruct_model.constraints:
                 param = constr(param)
@@ -38,9 +40,11 @@ class MIcroSTructureParameters(ABC):
 
 class MIcroSTructureParametersException(Exception):
     """Handle exceptions related to microstructure parameters."""
+
     pass
 
 
 class InvalidMIcroSTructureParameters(MIcroSTructureParametersException):
     """Handle exceptions related to wrong microstructure parameters."""
+
     pass

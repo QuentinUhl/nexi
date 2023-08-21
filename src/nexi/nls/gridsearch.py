@@ -6,8 +6,9 @@ from joblib import Parallel, delayed
 from ..models.functions.rician_mean import rice_mean
 
 
-def find_nls_initialization(signal, sigma, nb_estimates, acq_param, microstruct_model, grid_search_param_lim,
-                            debug=False):
+def find_nls_initialization(
+    signal, sigma, nb_estimates, acq_param, microstruct_model, grid_search_param_lim, debug=False
+):
     """
     Find the initialization of the Non-linear least squares algorithm.
     :param signal: signal for all b-values (shells) and diffusion times (Deltas)
@@ -25,7 +26,9 @@ def find_nls_initialization(signal, sigma, nb_estimates, acq_param, microstruct_
     nb_points = [15, 12, 8, 8]
 
     # Check that the number of parameters in the grid search and in the model are the same
-    assert microstruct_model.n_params == len(grid_search_param_lim), "Number of parameters in the grid search and in the model are different"
+    assert microstruct_model.n_params == len(
+        grid_search_param_lim
+    ), "Number of parameters in the grid search and in the model are different"
 
     # Define number of moving parameters
     if microstruct_model.has_rician_mean_correction:
@@ -33,10 +36,15 @@ def find_nls_initialization(signal, sigma, nb_estimates, acq_param, microstruct_
     else:
         n_moving_param = microstruct_model.n_params
 
-    logging.info(f"Initializing first grid search inside :\n{grid_search_param_lim}\nusing model {microstruct_model.name}\n...")
+    logging.info(
+        f"Initializing first grid search inside :\n{grid_search_param_lim}\nusing model {microstruct_model.name}\n..."
+    )
 
     # Generate the parameter grid combinations
-    param_grid = [np.linspace(grid_search_param_lim[p][0], grid_search_param_lim[p][1], nb_points[p] + 2)[1:-1].tolist() for p in range(n_moving_param)]
+    param_grid = [
+        np.linspace(grid_search_param_lim[p][0], grid_search_param_lim[p][1], nb_points[p] + 2)[1:-1].tolist()
+        for p in range(n_moving_param)
+    ]
     grid_combinations = list(itertools.product(*param_grid))
     parameters = np.array(grid_combinations)
 
@@ -44,29 +52,50 @@ def find_nls_initialization(signal, sigma, nb_estimates, acq_param, microstruct_
     if microstruct_model.has_rician_mean_correction:
         non_corrected_model = microstruct_model.non_corrected_model
         logging.info(f"Generating {non_corrected_model.name} signal dictionary")
-        signal_dict = np.array(Parallel(n_jobs=n_cores)(delayed(non_corrected_model.get_signal)(params, acq_param) for params
-                                                        in tqdm(grid_combinations)))
+        signal_dict = np.array(
+            Parallel(n_jobs=n_cores)(
+                delayed(non_corrected_model.get_signal)(params, acq_param) for params in tqdm(grid_combinations)
+            )
+        )
     else:
-        signal_dict = np.array(Parallel(n_jobs=n_cores)(delayed(microstruct_model.get_signal)(params, acq_param) for params
-                                                        in tqdm(grid_combinations)))
+        signal_dict = np.array(
+            Parallel(n_jobs=n_cores)(
+                delayed(microstruct_model.get_signal)(params, acq_param) for params in tqdm(grid_combinations)
+            )
+        )
     if debug:
         logging.info(f"Signal dictionary shape : {signal_dict.shape}")
 
     # Find the initial ground truth whether the model has a Rician mean correction or not
     logging.info("Extracting initial Ground Truth from dictionary")
     if microstruct_model.has_rician_mean_correction:
-        initial_gt = np.array(Parallel(n_jobs=n_cores)(
-            delayed(least_square_argmin_rician_corrected)(signal[i], sigma[i], signal_dict, parameters, acq_param.ndim)
-            for i in tqdm(range(nb_estimates))))
+        initial_gt = np.array(
+            Parallel(n_jobs=n_cores)(
+                delayed(least_square_argmin_rician_corrected)(
+                    signal[i], sigma[i], signal_dict, parameters, acq_param.ndim
+                )
+                for i in tqdm(range(nb_estimates))
+            )
+        )
         initial_gt = np.hstack((initial_gt, np.array([sigma]).T))
     else:
-        initial_gt = np.array(Parallel(n_jobs=n_cores)(delayed(least_square_argmin)(signal[i], signal_dict, parameters, acq_param.ndim) for i in tqdm(range(nb_estimates))))
+        initial_gt = np.array(
+            Parallel(n_jobs=n_cores)(
+                delayed(least_square_argmin)(signal[i], signal_dict, parameters, acq_param.ndim)
+                for i in tqdm(range(nb_estimates))
+            )
+        )
     if debug:
         logging.info(f'initial_gt shape : {initial_gt.shape}')
 
     # Add randomness to the initial GT
-    for parameter in range(len(grid_search_param_lim)-1):
-        initial_gt[:, parameter] += (1+overlap)*(grid_search_param_lim[parameter][1]-grid_search_param_lim[parameter][0])/(nb_points[parameter]+1)*(np.random.rand(nb_estimates) - 0.5)
+    for parameter in range(len(grid_search_param_lim) - 1):
+        initial_gt[:, parameter] += (
+            (1 + overlap)
+            * (grid_search_param_lim[parameter][1] - grid_search_param_lim[parameter][0])
+            / (nb_points[parameter] + 1)
+            * (np.random.rand(nb_estimates) - 0.5)
+        )
 
     # Print the first initial ground truth to check
     if debug:
@@ -88,7 +117,7 @@ def fix_parameter_limits_for_grid_search(param_lim):
         if param_lim[parameter_index][0] == 0:
             updated_param_lim[parameter_index][0] = epsilon
     if param_lim[3][1] == 1:
-        updated_param_lim[3][1] = 1-epsilon
+        updated_param_lim[3][1] = 1 - epsilon
     return updated_param_lim
 
 

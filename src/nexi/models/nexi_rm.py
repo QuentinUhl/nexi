@@ -47,7 +47,9 @@ class NexiRiceMean(MicroStructModel):
     @classmethod
     def get_jacobian(cls, parameters, acq_parameters):
         """Get jacobian from single Ground Truth."""
-        nexi_vec_jac_concatenation = nexi_jacobian_concatenated_from_vector(parameters[:-1], acq_parameters.b, acq_parameters.td)
+        nexi_vec_jac_concatenation = nexi_jacobian_concatenated_from_vector(
+            parameters[:-1], acq_parameters.b, acq_parameters.td
+        )
         nexi_signal_vec = nexi_vec_jac_concatenation[..., 0]
         nexi_vec_jac = nexi_vec_jac_concatenation[..., 1:]
         # Turn last parameter jacobian to 0 to avoid updates
@@ -64,7 +66,9 @@ class NexiRiceMean(MicroStructModel):
     @classmethod
     def get_mse_jacobian(cls, parameters, acq_parameters, signal_gt):
         """Get jacobian of Mean Square Error from single Ground Truth."""
-        nexi_vec_jac_concatenation = nexi_jacobian_concatenated_from_vector(parameters[:-1], acq_parameters.b, acq_parameters.td)
+        nexi_vec_jac_concatenation = nexi_jacobian_concatenated_from_vector(
+            parameters[:-1], acq_parameters.b, acq_parameters.td
+        )
         nexi_signal_vec = nexi_vec_jac_concatenation[..., 0]
         nexi_vec_jac = nexi_vec_jac_concatenation[..., 1:]
         nexi_rm_signal_vec, nexi_rm_vec_jac = rice_mean_and_jacobian(nexi_signal_vec, parameters[-1], dnu=nexi_vec_jac)
@@ -75,7 +79,6 @@ class NexiRiceMean(MicroStructModel):
         else:
             raise NotImplementedError
         return mse_jacobian
-
 
         # Turn last parameter jacobian to 0 to avoid updates
         # if acq_parameters.ndim == 1:

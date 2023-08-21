@@ -56,9 +56,9 @@ def powder_average(dwi_path, bvals_path, td_path, mask_path, out_path, debug=Fal
     nan_mask = np.copy(bool_mask).astype(float)
     for td in np.unique(tdvalues):
         # Find b0s
-        b0_selection = ((tdvalues == td) & (bvalues == 0))
+        b0_selection = (tdvalues == td) & (bvalues == 0)
         nb_of_b0 = np.sum(b0_selection)
-        assert(nb_of_b0 != 0)
+        assert nb_of_b0 != 0
         # Compute the mean of all b0 images to have one unique b0 image
         if nb_of_b0 > 1:
             b0_image = np.mean(dwi_image[..., b0_selection], axis=-1)
@@ -70,16 +70,16 @@ def powder_average(dwi_path, bvals_path, td_path, mask_path, out_path, debug=Fal
         nan_mask = np.copy(bool_mask).astype(float)
         nan_mask[bool_mask == 0] = np.nan
         # Put the b0 image, b and td inside the lists
-        pa_image.append((b0_image != 0).astype(float)*nan_mask)
+        pa_image.append((b0_image != 0).astype(float) * nan_mask)
         pa_b.append(0)
         pa_td.append(td)
         # Sort the unique (non-zero) b-values per diffusion time
         nonzero_b = np.sort(np.unique(bvalues[tdvalues == td]))[1:]
         for b in nonzero_b:
-            selection = ((tdvalues == td) & (bvalues == b))
+            selection = (tdvalues == td) & (bvalues == b)
             norm_image = np.mean(dwi_image[..., selection], axis=-1)
             # Compute the normalization inside the mask
-            norm_image = np.divide(norm_image*nan_mask, b0_image*nan_mask)
+            norm_image = np.divide(norm_image * nan_mask, b0_image * nan_mask)
             # Add all features to the lists
             pa_image.append(norm_image)
             pa_b.append(b)
@@ -92,15 +92,17 @@ def powder_average(dwi_path, bvals_path, td_path, mask_path, out_path, debug=Fal
     pa_image = np.stack(pa_image, axis=-1)
     # Reapply the last updated mask to every volume
     for volume in range(pa_image.shape[-1]):
-        pa_image[..., volume] = nan_mask*pa_image[..., volume]
+        pa_image[..., volume] = nan_mask * pa_image[..., volume]
     # Get rid of extreme values
     pa_image = np.clip(pa_image, 0, 1)
 
     # Check and convert b-values from s/mm² to ms/µm² if provided in s/mm²
     if np.max(pa_b) > 500:
         # Warn that the b-values were probably not in ms/µm²:
-        warnings.warn("b-values provided are suspiciously high. Please check that these values were in ms/µm². "
-                      "Continuing as if b-values provided were in s/mm²")
+        warnings.warn(
+            "b-values provided are suspiciously high. Please check that these values were in ms/µm². "
+            "Continuing as if b-values provided were in s/mm²"
+        )
         logging.info("Continuing as if b-values provided were in s/mm²")
         pa_b = np.divide(pa_b, 1000)
 
@@ -120,7 +122,9 @@ def powder_average(dwi_path, bvals_path, td_path, mask_path, out_path, debug=Fal
     powder_average_nii = nib.Nifti1Image(pa_img_no_b0, affine=aff, header=hdr)
     nib.save(powder_average_nii, powder_average_filename)
     if debug:
-        logging.info(f"Without b0s, image shape : {pa_img_no_b0.shape}  with maximum value of {np.nanmax(pa_img_no_b0)}")
+        logging.info(
+            f"Without b0s, image shape : {pa_img_no_b0.shape}  with maximum value of {np.nanmax(pa_img_no_b0)}"
+        )
         logging.info(f"b-values :{pa_b_no_b0}")
         logging.info(f"td values :{pa_td_no_b0}")
 
@@ -172,7 +176,7 @@ def save_powder_average_as_npz(dwi_path, bvals_path, td_path, small_delta, out_p
         logging.info(f"small delta : {small_delta}")
 
     # Initialize the extraction of the signal values where there is no NaN
-    mask = (pa_image.sum(axis=-1) > 0)
+    mask = pa_image.sum(axis=-1) > 0
     mask = mask.astype(bool) & np.invert(np.isnan(mask))
     locations = np.array(np.where(mask)).T  # (N, 3)
     signal = pa_image[mask, :]
@@ -181,10 +185,15 @@ def save_powder_average_as_npz(dwi_path, bvals_path, td_path, small_delta, out_p
         logging.info(f"Is there any nan ? {np.isnan(signal).sum()}")
         logging.info(f"Meaningful signal shape : {signal.shape}")
 
-    np.savez_compressed(powder_average_signal_npz_filename, signal=signal,
-                        b=bval, td=tdval, small_delta=small_delta,
-                        locations=locations,
-                        img_shape=pa_image.shape[0:3])
+    np.savez_compressed(
+        powder_average_signal_npz_filename,
+        signal=signal,
+        b=bval,
+        td=tdval,
+        small_delta=small_delta,
+        locations=locations,
+        img_shape=pa_image.shape[0:3],
+    )
     return powder_average_signal_npz_filename
 
 
@@ -231,8 +240,15 @@ def normalize_sigma(dwi_path, lowb_noisemap_path, bvals_path, out_path):
     return normalized_sigma_filename
 
 
-def save_data_as_npz(powder_average_filename, bvals_path, td_path, out_path,
-                     normalized_sigma_filename=None, small_delta=None, debug=False):
+def save_data_as_npz(
+    powder_average_filename,
+    bvals_path,
+    td_path,
+    out_path,
+    normalized_sigma_filename=None,
+    small_delta=None,
+    debug=False,
+):
     """
     Save the powder averaged image, b-values and diffusion times in a npz file
 
@@ -270,7 +286,7 @@ def save_data_as_npz(powder_average_filename, bvals_path, td_path, out_path,
         logging.info(f"diffusion times : {tdval}")
 
     # Initialize the extraction of the signal values where there is no NaN
-    mask = (pa_image.sum(axis=-1) > 0)
+    mask = pa_image.sum(axis=-1) > 0
     mask = mask.astype(bool) & np.invert(np.isnan(mask))
     locations = np.array(np.where(mask)).T  # (N, 3)
     signal = pa_image[mask, :]
@@ -286,13 +302,24 @@ def save_data_as_npz(powder_average_filename, bvals_path, td_path, out_path,
         if debug:
             logging.info(f"Normalized sigma array shape : {norm_sigma.shape}")
         sigma = norm_sigma[mask]
-        np.savez_compressed(powder_average_signal_npz_filename, signal=signal, sigma=sigma,
-                            b=bval, td=tdval, small_delta=small_delta,
-                            locations=locations,
-                            img_shape=pa_image.shape[0:3])
+        np.savez_compressed(
+            powder_average_signal_npz_filename,
+            signal=signal,
+            sigma=sigma,
+            b=bval,
+            td=tdval,
+            small_delta=small_delta,
+            locations=locations,
+            img_shape=pa_image.shape[0:3],
+        )
     else:
-        np.savez_compressed(powder_average_signal_npz_filename, signal=signal,
-                            b=bval, td=tdval, small_delta=small_delta,
-                            locations=locations,
-                            img_shape=pa_image.shape[0:3])
+        np.savez_compressed(
+            powder_average_signal_npz_filename,
+            signal=signal,
+            b=bval,
+            td=tdval,
+            small_delta=small_delta,
+            locations=locations,
+            img_shape=pa_image.shape[0:3],
+        )
     return powder_average_signal_npz_filename

@@ -26,9 +26,11 @@ class AcquisitionParameters(ABC):
 
 class AcquisitionParametersException(Exception):
     """Handle exceptions related to acquisition parameters."""
+
     pass
 
 
 class InvalidAcquisitionParameters(AcquisitionParametersException):
     """Handle exceptions related to wrong acquisition parameters."""
+
     pass

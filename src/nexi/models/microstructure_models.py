@@ -19,9 +19,11 @@ class MicroStructModel(ABC):
 
 class MicroStructModelException(Exception):
     """Handle exceptions related to microstructure models."""
+
     pass
 
 
 class InvalidMicroStructModel(MicroStructModelException):
     """Handle exceptions related to wrong microstructure models."""
+
     pass
