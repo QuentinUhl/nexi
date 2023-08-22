@@ -35,9 +35,9 @@ estimate_nexi(dwi_path, bvals_path, td_path, lowb_noisemap_path, out_path)
 
 `dwi_path`: The path to the diffusion-weighted image (DWI) data in NIfTI format. This data contains the preprocessed diffusion-weighted volumes acquired from your imaging study.
 
-`bvals_path`: The path to the b-values file corresponding to the DWI data. B-values specify the strength and timing of diffusion sensitization gradients for each volume in the DWI data.
+`bvals_path`: The path to the b-values file corresponding to the DWI data, in ms/µm². B-values specify the strength and timing of diffusion sensitization gradients for each volume in the DWI data.
 
-`td_path`: The path to the diffusion time (td) file, also known as Δ. This file provides information about the diffusion time for each volume in the DWI data. The diffusion time is the time between the two gradient pulses. 
+`td_path`: The path to the diffusion time (td) file, also known as Δ, in ms. This file provides information about the diffusion time for each volume in the DWI data. The diffusion time is the time between the two gradient pulses. 
 
 `lowb_noisemap_path`: The path to the noisemap calculated using only the small b-values (b < 2 ms/µm²) and Marchenko-Pastur principal component analysis (MP-PCA) denoising. This noisemap is used to calculate the signal-to-noise ratio (SNR) of the data.
 
